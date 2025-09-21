@@ -1,16 +1,49 @@
-// Confirm script is loading
 console.log("✅ script.js loaded!");
 
 // Initialize Fabric.js canvas
 const canvas = new fabric.Canvas("posterCanvas", {
-  backgroundColor: "#222"
+  preserveObjectStacking: true
 });
-canvas.renderAll();
 
-// Handle background color changes
+// Make a gradient rectangle background
+function setGradientBackground() {
+  const rect = new fabric.Rect({
+    left: 0,
+    top: 0,
+    width: canvas.width,
+    height: canvas.height,
+    selectable: false,
+    evented: false
+  });
+
+  rect.set("fill", new fabric.Gradient({
+    type: "linear",
+    gradientUnits: "percentage",
+    coords: { x1: 0, y1: 0, x2: 1, y2: 1 },
+    colorStops: [
+      { offset: 0, color: "#1db954" },
+      { offset: 1, color: "#191414" }
+    ]
+  }));
+
+  // Remove old background rect if exists
+  const oldBg = canvas.getObjects("rect").find(r => !r.selectable);
+  if (oldBg) canvas.remove(oldBg);
+
+  canvas.add(rect);
+  canvas.sendToBack(rect);
+  canvas.renderAll();
+}
+setGradientBackground();
+
+// Handle solid background color picker
 document.getElementById("bgColorPicker").addEventListener("input", function (e) {
-  console.log("🎨 Background color changed:", e.target.value);
-  canvas.setBackgroundColor(e.target.value, canvas.renderAll.bind(canvas));
+  console.log("🎨 Background changed:", e.target.value);
+  const rect = canvas.getObjects("rect").find(r => !r.selectable);
+  if (rect) {
+    rect.set("fill", e.target.value);
+    canvas.renderAll();
+  }
 });
 
 // Handle photo upload
@@ -21,12 +54,8 @@ document.getElementById("photoUpload").addEventListener("change", function (e) {
     reader.onload = function (event) {
       fabric.Image.fromURL(event.target.result, function (img) {
         img.scaleToWidth(canvas.width);
-        img.scaleToHeight(canvas.height * 0.6); // photo covers top 60%
-        img.set({
-          left: 0,
-          top: 0,
-          selectable: true,
-        });
+        img.scaleToHeight(canvas.height * 0.6);
+        img.set({ left: 0, top: 0, selectable: true });
         canvas.add(img);
         canvas.sendToBack(img);
         console.log("📸 Photo added to canvas");
@@ -36,7 +65,7 @@ document.getElementById("photoUpload").addEventListener("change", function (e) {
   }
 });
 
-// Handle song input (always keeps one text object)
+// Handle song input
 document.getElementById("songInput").addEventListener("input", function (e) {
   let existingSongText = canvas.getObjects("text").find(obj => obj.songText);
   if (existingSongText) {
