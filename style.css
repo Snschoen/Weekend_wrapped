@@ -1,0 +1,43 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #fff;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  max-width: 650px;
+  margin: auto;
+  padding: 20px;
+}
+
+.controls {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin: 10px 0;
+}
+
+#stickerOptions img {
+  width: 50px;
+  margin: 5px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+#stickerOptions img:hover {
+  transform: scale(1.2);
+}
+
+canvas {
+  border-radius: 20px;
+  background: linear-gradient(135deg, #1db954, #191414);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  margin: 20px auto;
+  display: block;
+}
