@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Weekend Wrapped</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js"></script>
@@ -12,38 +12,45 @@
     <h1>🎵 Weekend Wrapped</h1>
 
     <div class="controls">
-      <label>Choose background color:
+      <label>
+        <input type="checkbox" id="gradientToggle" checked>
+        Use Gradient Background
+      </label>
+      <br>
+
+      <label>Pick background color:
         <input type="color" id="bgColorPicker" value="#191414">
       </label>
+      <br>
 
       <label>Upload a photo:
         <input type="file" id="photoUpload" accept="image/*">
       </label>
+      <br>
 
       <label>Song on repeat:
         <input type="text" id="songInput" placeholder="Type your song...">
       </label>
+      <br>
 
       <label>Add custom text:</label>
       <input type="text" id="customText" placeholder="Type a caption...">
       <button id="addTextBtn">Add Text</button>
+      <br>
 
       <label>Add a sticker:</label>
       <div id="stickerOptions">
-        <img src="stickers/star.png" class="sticker-option" alt="Star">
-        <img src="stickers/music.png" class="sticker-option" alt="Music">
-        <img src="stickers/heart.png" class="sticker-option" alt="Heart">
+        <img src="stickers/star.png" class="sticker-option" alt="Star" width="40">
+        <img src="stickers/music.png" class="sticker-option" alt="Music" width="40">
+        <img src="stickers/heart.png" class="sticker-option" alt="Heart" width="40">
       </div>
     </div>
 
-    <!-- Canvas -->
-    <canvas id="posterCanvas" width="500" height="600" style="border:1px solid #333;"></canvas>
+    <canvas id="posterCanvas" width="500" height="600"></canvas>
 
-    <!-- Download button -->
     <button id="downloadBtn" style="margin-top:20px;">Download Poster</button>
   </div>
 
-  <!-- JS must be loaded last -->
   <script src="script.js"></script>
 </body>
 </html>
