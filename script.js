@@ -1,98 +1,98 @@
+// Confirm script is loading
 console.log("✅ script.js loaded!");
 
-const canvas = new fabric.Canvas("posterCanvas");
+// Initialize Fabric.js canvas
+const canvas = new fabric.Canvas("posterCanvas", {
+  backgroundColor: "#222"
+});
+canvas.renderAll();
 
-// Initial two-zone layout: top for photo, bottom for text
-canvas.setBackgroundColor("#191414", canvas.renderAll.bind(canvas));
-
-// Draw bottom section (solid color area for text)
-function drawBottomSection(color = "#191414") {
-  const rect = new fabric.Rect({
-    left: 0,
-    top: 400,
-    width: canvas.width,
-    height: 200,
-    fill: color,
-    selectable: false,
-    evented: false
-  });
-
-  // remove old rect if any
-  const oldRect = canvas.getObjects("rect").find(r => r.sectionRect);
-  if (oldRect) canvas.remove(oldRect);
-
-  rect.sectionRect = true;
-  canvas.add(rect);
-  canvas.sendToBack(rect);
-}
-drawBottomSection();
-
-// Background color picker changes bottom section color
-document.getElementById("bgColorPicker").addEventListener("input", function(e) {
-  drawBottomSection(e.target.value);
-  canvas.renderAll();
+// Handle background color changes
+document.getElementById("bgColorPicker").addEventListener("input", function (e) {
+  console.log("🎨 Background color changed:", e.target.value);
+  canvas.setBackgroundColor(e.target.value, canvas.renderAll.bind(canvas));
 });
 
-// Handle photo upload (top section)
-fabric.Image.fromURL(event.target.result, function(img) {
-  img.scaleToWidth(canvas.width);
-  img.scaleToHeight(400);
-  img.set({ left: 0, top: 0, selectable: false, evented: false });
-
-  canvas.add(img);
-  canvas.sendToBack(img);
+// Handle photo upload
+document.getElementById("photoUpload").addEventListener("change", function (e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      fabric.Image.fromURL(event.target.result, function (img) {
+        img.scaleToWidth(canvas.width);
+        img.scaleToHeight(canvas.height * 0.6); // photo covers top 60%
+        img.set({
+          left: 0,
+          top: 0,
+          selectable: true,
+        });
+        canvas.add(img);
+        canvas.sendToBack(img);
+        console.log("📸 Photo added to canvas");
+      });
+    };
+    reader.readAsDataURL(file);
+  }
 });
 
-// Song input
-document.getElementById("songInput").addEventListener("input", function(e) {
-  let songText = canvas.getObjects("text").find(obj => obj.songText);
-  if (!songText) {
-    songText = new fabric.Text("🎵 " + e.target.value, {
+// Handle song input (always keeps one text object)
+document.getElementById("songInput").addEventListener("input", function (e) {
+  let existingSongText = canvas.getObjects("text").find(obj => obj.songText);
+  if (existingSongText) {
+    existingSongText.text = e.target.value || "🎵 Your Song Here";
+    canvas.renderAll();
+  } else {
+    const text = new fabric.Text(e.target.value || "🎵 Your Song Here", {
       left: 20,
-      top: 420,
-      fontSize: 24,
+      top: canvas.height - 120,
+      fontSize: 20,
       fill: "white",
+      fontFamily: "Arial",
       songText: true
     });
-    canvas.add(songText);
-  } else {
-    songText.text = "🎵 " + (e.target.value || "Your Song Here");
+    canvas.add(text);
   }
-  canvas.renderAll();
+  console.log("🎶 Song text updated");
 });
 
-// Stickers
+// Handle sticker selection
 document.querySelectorAll(".sticker-option").forEach(sticker => {
-  sticker.addEventListener("click", function() {
-    fabric.Image.fromURL(this.src, function(img) {
+  sticker.addEventListener("click", function () {
+    fabric.Image.fromURL(this.src, function (img) {
       img.scale(0.2);
-      img.set({ left: 250, top: 250 });
+      img.set({ left: 100, top: 100 });
       canvas.add(img);
+      console.log("✨ Sticker added:", sticker.alt);
     });
   });
 });
 
-// Custom text
-document.getElementById("addTextBtn").addEventListener("click", function() {
-  const val = document.getElementById("customText").value;
-  if (val.trim()) {
-    const text = new fabric.Textbox(val, {
-      left: 20,
-      top: 460,
-      fontSize: 20,
+// Handle adding custom text
+document.getElementById("addTextBtn").addEventListener("click", function () {
+  const textValue = document.getElementById("customText").value;
+  if (textValue.trim()) {
+    const text = new fabric.Textbox(textValue, {
+      left: 150,
+      top: 300,
+      fontSize: 24,
       fill: "yellow",
-      width: 460
+      fontFamily: "Arial",
+      editable: true,
+      width: 200
     });
     canvas.add(text);
+    console.log("📝 Custom text added:", textValue);
     document.getElementById("customText").value = "";
   }
 });
 
-// Download
-document.getElementById("downloadBtn").addEventListener("click", function() {
+// Download poster
+document.getElementById("downloadBtn").addEventListener("click", function () {
   const dataURL = canvas.toDataURL({ format: "png" });
   const link = document.createElement("a");
   link.download = "weekend_wrapped.png";
   link.href = dataURL;
   link.click();
+  console.log("💾 Poster downloaded");
 });
