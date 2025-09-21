@@ -34,27 +34,13 @@ document.getElementById("bgColorPicker").addEventListener("input", function(e) {
 });
 
 // Handle photo upload (top section)
-document.getElementById("photoUpload").addEventListener("change", function(e) {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      fabric.Image.fromURL(event.target.result, function(img) {
-        img.scaleToWidth(canvas.width);
-        img.scaleToHeight(400);
-        img.set({ left: 0, top: 0, selectable: false, evented: false });
+fabric.Image.fromURL(event.target.result, function(img) {
+  img.scaleToWidth(canvas.width);
+  img.scaleToHeight(400);
+  img.set({ left: 0, top: 0, selectable: false, evented: false });
 
-        // remove old background image if any
-        const oldImg = canvas.getObjects("image").find(i => i.bgImage);
-        if (oldImg) canvas.remove(oldImg);
-
-        img.bgImage = true;
-        canvas.add(img);
-        canvas.sendToBack(img);
-      });
-    };
-    reader.readAsDataURL(file);
-  }
+  canvas.add(img);
+  canvas.sendToBack(img);
 });
 
 // Song input
