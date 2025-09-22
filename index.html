@@ -1,152 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Weekend Wrapped Poster</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
-  <style>
-    body {
-      background: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-    }
-    canvas {
-      border-radius: 20px;
-      background: linear-gradient(135deg, #1db954, #191414);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      margin: 20px auto;
-      display: block;
-    }
-    input, button {
-      margin: 8px;
-      padding: 8px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weekend Wrapped</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js"></script>
 </head>
 <body>
-  <h1>🎶 Weekend Wrapped Poster</h1>
+  <div class="app-container">
+    <h1>🎵 Weekend Wrapped</h1>
 
-  <label>Background Color: <input type="color" id="bgColorPicker" value="#222222"></label>
-  <br>
-  <label>Upload Main Photo: <input type="file" id="photoUpload"></label>
-  <br>
-  <label>Upload Secondary Photo: <input type="file" id="photoUpload2"></label>
-  <br>
-  <input type="text" id="customText" placeholder="Enter custom text...">
-  <button id="updateTextBtn">Update Text</button>
-  <br>
-  <button id="resetBtn">Reset</button>
-  <button id="downloadBtn">Download Poster</button>
+    <div class="controls">
+      <label>
+        <input type="checkbox" id="gradientToggle" checked>
+        Use Gradient Background
+      </label>
+      <br>
 
-  <canvas id="posterCanvas" width="500" height="600"></canvas>
+      <label>Pick background color:
+        <input type="color" id="bgColorPicker" value="#191414">
+      </label>
+      <br>
 
-  <script>
-    const canvas = new fabric.Canvas("posterCanvas", {
-      backgroundColor: "#222"
-    });
+      <label>Upload main photo:
+        <input type="file" id="photoUpload" accept="image/*">
+      </label>
+      <br>
+      
+      <label>Upload secondary photo:
+        <input type="file" id="photoUpload2" accept="image/*">
+      </label>
+      <br>
 
-    // Draw gradient background
-    function setGradientBackground() {
-      const gradient = new fabric.Gradient({
-        type: "linear",
-        gradientUnits: "percentage",
-        coords: { x1: 0, y1: 0, x2: 1, y2: 1 },
-        colorStops: [
-          { offset: 0, color: "#1db954" },
-          { offset: 1, color: "#191414" }
-        ]
-      });
-      canvas.setBackgroundColor(gradient, canvas.renderAll.bind(canvas));
-    }
-    setGradientBackground();
+     <button id="resetBtn">Reset</button>
+     <button id="downloadBtn">Download Poster</button>
+    </div>
 
-    // Add static labels
-    const songLabel = new fabric.Text("Song on Repeat:", { left: 20, top: 380, fontSize: 18, fill: "white", id: "songLabel" });
-    const funLabel = new fabric.Text("Something Fun:", { left: 20, top: 420, fontSize: 18, fill: "white", id: "funLabel" });
-    const happenedLabel = new fabric.Text("What Happened:", { left: 20, top: 460, fontSize: 18, fill: "white", id: "happenedLabel" });
+    <canvas id="posterCanvas" width="500" height="600"></canvas>
+  </div>
 
-    canvas.add(songLabel, funLabel, happenedLabel);
-
-    // Handle background color
-    document.getElementById("bgColorPicker").addEventListener("input", function(e) {
-      canvas.setBackgroundColor(e.target.value, canvas.renderAll.bind(canvas));
-    });
-
-    // Handle main photo upload
-    document.getElementById("photoUpload").addEventListener("change", function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          fabric.Image.fromURL(event.target.result, function(img) {
-            img.scaleToWidth(canvas.width);
-            img.scaleToHeight(canvas.height * 0.7); // top section
-            img.set({ left: 0, top: 0, selectable: true });
-            canvas.add(img);
-            canvas.sendToBack(img);
-          });
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Handle secondary photo upload
-    document.getElementById("photoUpload2").addEventListener("change", function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          fabric.Image.fromURL(event.target.result, function(img) {
-            img.scale(0.4);
-            img.set({ left: 300, top: 400, selectable: true });
-            canvas.add(img);
-          });
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Handle updating custom text into placeholders
-    document.getElementById("updateTextBtn").addEventListener("click", function() {
-      const textValue = document.getElementById("customText").value.trim();
-      if (!textValue) return;
-
-      // Find first empty placeholder
-      if (!songLabel.value) {
-        songLabel.text = "Song on Repeat: " + textValue;
-        songLabel.value = textValue;
-      } else if (!funLabel.value) {
-        funLabel.text = "Something Fun: " + textValue;
-        funLabel.value = textValue;
-      } else if (!happenedLabel.value) {
-        happenedLabel.text = "What Happened: " + textValue;
-        happenedLabel.value = textValue;
-      }
-      canvas.renderAll();
-      document.getElementById("customText").value = "";
-    });
-
-    // Reset button
-    document.getElementById("resetBtn").addEventListener("click", function() {
-      canvas.clear();
-      setGradientBackground();
-      canvas.add(songLabel, funLabel, happenedLabel);
-      songLabel.text = "Song on Repeat:"; songLabel.value = null;
-      funLabel.text = "Something Fun:"; funLabel.value = null;
-      happenedLabel.text = "What Happened:"; happenedLabel.value = null;
-      canvas.renderAll();
-    });
-
-    // Download poster
-    document.getElementById("downloadBtn").addEventListener("click", function() {
-      const dataURL = canvas.toDataURL({ format: "png" });
-      const link = document.createElement("a");
-      link.download = "weekend_wrapped.png";
-      link.href = dataURL;
-      link.click();
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
